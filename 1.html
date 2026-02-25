@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Victus AI Construction Planning</title>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+        body { background: #f4f6f9; color: #333; }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(to right, #1e40af, #2563eb);
+            color: white;
+            text-align: center;
+            padding: 70px 20px;
+        }
+        .hero h1 { font-size: 50px; font-weight: 800; }
+        .hero p { font-size: 18px; opacity: 0.9; max-width: 750px; margin: auto; margin-top: 10px; }
+
+        /* Form Section */
+        .form-section { display: flex; justify-content: center; padding: 40px; }
+        .form-card {
+            background: white; padding: 35px; border-radius: 20px;
+            width: 100%; max-width: 740px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            animation: fadeIn 1s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { text-align: center; margin-bottom: 25px; font-size: 28px; }
+
+        .input-group { margin-bottom: 20px; }
+        label { font-weight: 600; }
+        input, select {
+            width: 100%; padding: 12px;
+            border-radius: 12px; border: 1px solid #ccc; margin-top: 6px;
+        }
+
+        .input-row { display: flex; gap: 20px; }
+
+        button {
+            width: 100%; padding: 16px; border-radius: 12px;
+            background: #2563eb; color: white; border: none;
+            font-size: 18px; font-weight: 700; cursor: pointer;
+            margin-top: 15px; transition: 0.2s;
+        }
+        button:hover { background: #1d4ed8; }
+
+        /* Output Section */
+        .output-section { padding: 40px 20px; text-align: center; display: none; }
+        .output-grid {
+            margin-top: 30px; display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .output-card {
+            background: white; padding: 25px; border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.07);
+        }
+        .output-card h3 { font-size: 22px; margin-bottom: 12px; }
+
+        /* Download Button */
+        .download-btn {
+            margin-top: 30px; padding: 15px 25px;
+            background: #10b981; color: white;
+            border-radius: 12px; font-size: 18px;
+            font-weight: bold; cursor: pointer; border: none;
+        }
+        .download-btn:hover { background: #059669; }
+    </style>
+</head>
+
+<body>
+    <header class="hero">
+        <h1>Victus AI Construction Planning</h1>
+        <p>AI-powered cost estimation, scheduling, resource planning, environmental analysis, and risk assessment for smarter construction decisions.</p>
+    </header>
+
+    <section class="form-section">
+        <div class="form-card">
+            <h2>Enter Project Details</h2>
+
+            <div class="input-group">
+                <label>Project Name</label>
+                <input type="text" id="projectName" placeholder="e.g. Residential Apartment Project">
+            </div>
+
+            <div class="input-group">
+                <label>Project Type</label>
+                <select id="projectType">
+                    <option>Residential Building</option>
+                    <option>Commercial Complex</option>
+                    <option>Highway / Roads</option>
+                    <option>Bridge Construction</option>
+                    <option>Industrial Structure</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Material Quality</label>
+                <select id="materialQuality">
+                    <option>Standard</option>
+                    <option>Premium</option>
+                    <option>Eco-Friendly</option>
+                </select>
+            </div>
+
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Project Area (sq ft)</label>
+                    <input type="number" id="area" placeholder="5000">
+                </div>
+
+                <div class="input-group">
+                    <label>Duration (months)</label>
+                    <input type="number" id="duration" placeholder="12">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Budget Limit (₹)</label>
+                <input type="number" id="budget" placeholder="10000000">
+            </div>
+
+            <button onclick="generatePlan()">Generate AI Plan</button>
+        </div>
+    </section>
+
+    <section class="output-section" id="results">
+        <h2>AI-Generated Construction Plan</h2>
+
+        <div class="output-grid">
+            <div class="output-card">
+                <h3>Cost Estimate</h3>
+                <p id="costOutput"></p>
+            </div>
+
+            <div class="output-card">
+                <h3>Schedule Breakdown</h3>
+                <p id="scheduleOutput"></p>
+            </div>
+
+            <div class="output-card">
+                <h3>Resources Needed</h3>
+                <p id="resourceOutput"></p>
+            </div>
+
+            <div class="output-card">
+                <h3>Risk Analysis</h3>
+                <p id="riskOutput"></p>
+            </div>
+
+            <div class="output-card">
+                <h3>Environmental Impact (CO₂ estimate)</h3>
+                <p id="ecoOutput"></p>
+            </div>
+
+            <div class="output-card">
+                <h3>AI Summary</h3>
+                <p id="summaryOutput"></p>
+            </div>
+        </div>
+
+        <button class="download-btn" onclick="downloadReport()">Download Project Report</button>
+    </section>
+
+    <script>
+        function generatePlan() {
+            const name = document.getElementById("projectName").value;
+            const type = document.getElementById("projectType").value;
+            const quality = document.getElementById("materialQuality").value;
+            const area = parseFloat(document.getElementById("area").value);
+            const duration = parseFloat(document.getElementById("duration").value);
+            const budget = parseFloat(document.getElementById("budget").value);
+
+            if (!name || !area || !duration || !budget) {
+                alert("Please fill all required fields");
+                return;
+            }
+
+            // Cost Logic
+            let qualityFactor = quality === "Premium" ? 1.3 :
+                                quality === "Eco-Friendly" ? 1.15 : 1.0;
+            let costEstimate = (area * 1600 * qualityFactor) + (duration * 150000);
+
+            // Schedule Logic
+            const schedule = `
+                • Foundation Phase: ${Math.ceil(duration * 0.20)} months<br>
+                • Structure Phase: ${Math.ceil(duration * 0.40)} months<br>
+                • Finishing Phase: ${Math.ceil(duration * 0.30)} months<br>
+                • Inspection & Handover: ${Math.ceil(duration * 0.10)} months
+            `;
+
+            // Resource Logic
+            const workers = Math.ceil(area / 450);
+            const machines = Math.ceil(area / 1200);
+
+            // Risk Analysis
+            const risk = `
+                • Material Price Fluctuation: Moderate<br>
+                • Labour Availability Risk: Low<br>
+                • Climate Delay Risk: High<br>
+                • Overall Project Risk Level: Medium
+            `;
+
+            // Environmental Impact
+            const co2 = (area * 12).toLocaleString();
+
+            // AI Summary
+            const summary = `
+                The ${name} (${type}) project using ${quality} materials is estimated to 
+                complete in ${duration} months. Cost and resource planning appear balanced 
+                with moderate risk levels. Optimizing labour scheduling may reduce delays.
+            `;
+
+            document.getElementById("costOutput").innerHTML = `Estimated Cost: <b>₹${costEstimate.toLocaleString()}</b>`;
+            document.getElementById("scheduleOutput").innerHTML = schedule;
+            document.getElementById("resourceOutput").innerHTML = `${workers} workers<br>${machines} machines`;
+            document.getElementById("riskOutput").innerHTML = risk;
+            document.getElementById("ecoOutput").innerHTML = `${co2} kg CO₂ estimated`;
+            document.getElementById("summaryOutput").innerHTML = summary;
+
+            document.getElementById("results").style.display = "block";
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+
+        function downloadReport() {
+            alert("PDF export can be added in backend (FastAPI / NodeJS).");
+        }
+    </script>
+
+</body>
+</html>
